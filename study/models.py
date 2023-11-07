@@ -31,7 +31,7 @@ class StudyTopic(models.Model):
 
 class StudyTopicPreferences(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
-    study_topic = models.OneToOneField(StudyTopic, on_delete=models.CASCADE)
+    study_topic = models.ForeignKey(StudyTopic, on_delete=models.CASCADE)
     weekly_minutes_goal = models.IntegerField(default=120)
 
     def __str__(self):
