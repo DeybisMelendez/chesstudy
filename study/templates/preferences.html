@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Preferencias {% endblock %}
+{% block content %}
+{% include 'nav.html' %}
+<main class="container">
+	<figure>
+		<table>
+			<caption>
+				Objetivo de estudio semanal
+			</caption>
+			<thead>
+				<tr>
+					<th>Tema de estudio</th>
+					<th>Objetivo</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for preference in preferences %}
+				<tr>
+					<td>{{ preference.study_topic.name }}</td>
+					<td>{{ preference.weekly_minutes_goal }} mins</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</figure>
+
+	<form method="post">
+		{% csrf_token %} {{ formset.management_form }}
+		<div class="grid">
+			<div>
+				<label for="study_topic">Tema de estudio:</label>
+				<select name="study_topic" id="study_topic">
+					{% for preference in preferences %}
+					<option value="{{ preference.study_topic.id }}">
+						{{ preference.study_topic.name }}
+					</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div>
+				<label for="minutes_goal">Nuevo objetivo</label>
+				<input
+					type="number"
+					name="minutes_goal"
+					id="minutes_goal"
+					required
+				/>
+			</div>
+		</div>
+		<button type="submit">Guardar cambios</button>
+	</form>
+</main>
+{% endblock %}

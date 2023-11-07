@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+{% include 'nav.html' %}
+<main class="container">    
+  <h2>Bienvenido, {{ player.user.username }}</h2>
+  <b>Semana del {{ current_week_start|date:"d F Y" }} - {{ current_week_end|date:"d F Y" }}</b>
+  <p><b>Elo: {{player.elo_rating}}</b><br>Cambio de puntuación: {{last_elo.elo_variation}} <br>
+    Elo mas alto: {{hightest_elo.elo_rating}}
+    </p>
+  <figure>
+      <table>
+          <caption>Plan de estudio</caption>
+          <thead>
+              <tr>
+                  <th>Áreas de estudio</th>
+                  <th>Minutos estudiados</th>
+                  <th>Objetivo semanal</th>
+                  <th>Estado</th>
+              </tr>
+          </thead>
+          {% for data in study_data %}
+
+          <tr>
+              <th>{{ data.topic_name }}</th>
+              <td>{{data.minutes_studied}} mins</td>
+              <td>{{data.weekly_goal}} mins</td>
+              <td>{% if data.progress >= 1 %}
+                  <span style="color: green;">Cumplido</span>
+              {% else %}
+                  <span style="color: red;">Pendiente </span>
+              {% endif %}</td>
+          </tr>
+          {% endfor %}
+      </table>
+  </figure>
+
+  <h3>Agregar Progreso Diario</h3>
+  <form method="post" >
+      {% csrf_token %}
+      <div class="grid">     
+          <div>
+              <label for="study_topic">Tema de estudio:</label>
+              <select name="study_topic" id="study_topic">
+                  {% for preference in preferences %}
+                      <option value="{{ preference.study_topic.id }}">{{ preference.study_topic.name }}</option>
+                  {% endfor %}
+              </select>
+          </div>
+          <div>
+              <label for="minutes_studied">Minutos estudiados:</label>
+              <input type="number" name="minutes_studied" id="minutes_studied" required>
+          </div>
+      </div>
+      <button type="submit">Agregar Progreso</button>
+  </form>
+
+  <figure>
+      <table>
+          <caption>Historial de Progreso Diario</caption>
+          <thead>
+              <tr>
+                  <th>Fecha</th>
+                  <th>Tema de Estudio</th>
+                  <th>Minutos Estudiados</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for progress_entry in history %}
+              <tr>
+                  <td>{{ progress_entry.date }}</td>
+                  <td>{{ progress_entry.study_topic.name }}</td>
+                  <td>{{ progress_entry.minutes_studied }} mins</td>
+              </tr>
+              {% empty %}
+              <tr>
+                  <td colspan="3">No hay registros de progreso diario.</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  </figure>
+  </div>
+</main>
+{% endblock %}

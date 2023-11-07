@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Top elo{% endblock %}
+{% block content %}
+{% include 'nav.html' %}
+<main class="container">
+	<table>
+		<caption>
+			Top Elo
+		</caption>
+		<thead>
+			<tr>
+				<th>Rank</th>
+				<th>Usuario</th>
+				<th>Elo Rating</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for player in top_players %}
+			<tr>
+				<td>{{ forloop.counter }}</td>
+				<td>{{ player.user.username }}</td>
+				<td>{{ player.elo_rating }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</main>
+{% endblock %}
