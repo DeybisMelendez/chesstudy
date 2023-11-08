@@ -13,6 +13,14 @@ class CustomLoginView(LoginView):
 def player_dashboard(request):
     today = date.today()
     player = request.user.player
+    if request.method == "POST":
+        study_topic_id = request.POST.get("study_topic")
+        minutes_studied = int(request.POST.get("minutes_studied"))
+
+        if StudyTopic.objects.filter(id=study_topic_id).exists() and 0 <= minutes_studied <= 1440:
+            DailyProgress.objects.create(
+                player=player, study_topic_id=study_topic_id, date=today, minutes_studied=minutes_studied)
+
     elo_history = EloHistory.objects.filter(
         player=player).order_by('-date')
     hightest_elo_history = EloHistory.objects.filter(
@@ -42,14 +50,6 @@ def player_dashboard(request):
         minutes_studied = minutes_studied_by_topic.get(topic_name, 0)
         study_data.append(
             {'topic_name': topic_name, 'weekly_goal': weekly_goal, 'minutes_studied': minutes_studied, "progress": minutes_studied/weekly_goal})
-
-    if request.method == "POST":
-        study_topic_id = request.POST.get("study_topic")
-        minutes_studied = int(request.POST.get("minutes_studied"))
-
-        if StudyTopic.objects.filter(id=study_topic_id).exists() and 0 <= minutes_studied <= 1440:
-            DailyProgress.objects.create(
-                player=player, study_topic_id=study_topic_id, date=today, minutes_studied=minutes_studied)
 
     context = {
         "player": player,
