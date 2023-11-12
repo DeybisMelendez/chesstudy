@@ -82,4 +82,12 @@
   </figure>
   </div>
 </main>
+{% if messages %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% for m in messages %}
+<script>
+    Swal.fire('{{m}}')
+</script>
+{% endfor %}
+{% endif %}
 {% endblock %}

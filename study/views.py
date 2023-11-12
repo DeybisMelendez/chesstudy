@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from datetime import date, timedelta
 from .models import StudyTopic, DailyProgress, StudyTopicPreferences, Player, EloHistory
 from django.contrib.auth.views import LoginView
+from django.contrib import messages
 
 
 class CustomLoginView(LoginView):
@@ -25,8 +26,9 @@ def player_dashboard(request):
         player=player).order_by('-date')
     hightest_elo_history = EloHistory.objects.filter(
         player=player).order_by('-elo_rating')
-    last_elo = elo_history[1] if elo_history else 0
-    hightest_elo = hightest_elo_history[0] if hightest_elo_history else 0
+    last_elo = elo_history[0] if len(elo_history) > 0 else 0
+    hightest_elo = hightest_elo_history[0] if len(
+        hightest_elo_history) > 0 else 0
     current_week_start = today - timedelta(days=date.today().weekday())
     current_week_end = current_week_start + \
         timedelta(days=6) + timedelta(hours=23) + timedelta(minutes=59)
@@ -50,6 +52,21 @@ def player_dashboard(request):
         minutes_studied = minutes_studied_by_topic.get(topic_name, 0)
         study_data.append(
             {'topic_name': topic_name, 'weekly_goal': weekly_goal, 'minutes_studied': minutes_studied, "progress": minutes_studied/weekly_goal})
+    elo_cookie = 'elo-cambiado-'
+    elo_date = elo_history[0].date if elo_history else 0
+    elo_cookie += str(elo_date)
+    if not request.session.get(elo_cookie, False) and elo_date != 0:
+        request.session[elo_cookie] = True
+        elo_variation = elo_history[0].elo_variation
+        if elo_variation > 0:
+            messages.success(request,
+                             f"Felicidades, has ganado {elo_variation} puntos Elo esta semana. ¡Sigue así!.")
+        elif elo_variation < 0:
+            messages.success(request,
+                             f"¡Oh no! Has perdido {elo_variation*-1} puntos Elo esta semana.¡Ponte a estudiar!")
+        else:
+            messages.success(request,
+                             "Nada mal, no ganaste Elo esta semana pero tampoco perdiste, ¡Estudia un poco mas!")
 
     context = {
         "player": player,

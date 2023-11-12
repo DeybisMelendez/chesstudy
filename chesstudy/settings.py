@@ -125,3 +125,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGIN_URL = ''
+MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
